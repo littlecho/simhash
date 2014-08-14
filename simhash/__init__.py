@@ -3,6 +3,7 @@ import re
 import hashlib
 import logging
 import collections
+import sys
 from simcache import SIMCACHE
 
 class Simhash(object):
@@ -20,7 +21,7 @@ class Simhash(object):
         '''
 
         self.f = f
-        self.reg = reg
+        self.reg = re.compile(r'\w', re.UNICODE)
         self.value = None
 
         if hashfunc is None:
@@ -44,7 +45,7 @@ class Simhash(object):
         else:
             raise Exception('Bad parameter')
 
-    def _slide(self, content, width=4):
+    def _slide(self, content, width=1):  #change width to 1 for each specifying each character as a token
         return [content[i:i+width] for i in xrange(max(len(content)-width+1, 1))]
 
     def _tokenize(self, content):
@@ -52,7 +53,14 @@ class Simhash(object):
         content = content.lower()
         content = ''.join(re.findall(self.reg, content))
         ans = self._slide(content)
+        """
+        #debug usage
+        for part in ans:
+            print >> sys.stderr, part + '\t'
+        print type(ans)
+        """
         return ans
+        
 
     def build_by_text(self, content):
         features = self._tokenize(content)
